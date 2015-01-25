@@ -12,6 +12,11 @@ package
 	
 	import flash.geom.*;
 	
+	
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class StartGame extends Sprite implements IDispose
 	{
 		public var game:GameState;
@@ -34,17 +39,41 @@ package
 		
 		private var score:ScoreCounter = new ScoreCounter();
 		
-		public function StartGame():void 
+		private var scoreTable:ResultTable;
+		
+		private var oldGame:NewGame;
+		
+		public function StartGame(e:NewGame):void 
 		{			
 			this.addChild(this.score);
+			if (e != null){
+				this.score.UpdateScore(e.score);
+			}
 			
+			this.addEventListener(Event.ADDED_TO_STAGE, this.init2)
+			this.oldGame = e;
+		}
+		
+		private function init2(e:Event):void {
 			this.matrix = new MapMatrix();
 			this.matrix.addEventListener(typeof MapLoadedEvent, this.onInitialized);
+			this.matrix.Init(this.oldGame != null ? this.oldGame.map : null);
 		}
 		
 		public function Dispose():void {
-			this.gameOver.Dispose();
-			this.removeChild(this.gameOver);
+			if (this.gameOver != null) {
+				this.gameOver.Dispose();
+				this.removeChild(this.gameOver);
+			}
+		}
+		
+		private function onLoadGame(e:NewGame) {
+			this.Dispose();
+			var event:NewGame = new NewGame(typeof NewGame);
+			event.coords = e.coords;
+			event.score = e.score;
+			event.map = e.map;
+			this.dispatchEvent(event);
 		}
 		
 		private function onRestartButtonClick(e:MouseEvent) {
@@ -68,10 +97,20 @@ package
 		private function onInitialized(e:Event):void {
 			this.addChild(this.matrix);
 			this.map = this.matrix.matrix;
-			this.game = new GameState(this.matrix);
+			this.game = new GameState(this.matrix, this.score, this.oldGame != null ? this.oldGame.coords : null);
+
+			this.game.addEventListener(typeof NewGame, this.onLoadGame);
+
 			
 			this.pacman = new Sprite();
 			this.pacman.x = MapMatrix.deltaX;
+			
+			if (this.oldGame) {
+				var length:int = this.oldGame.coords.length;
+				this.pacmanX = this.oldGame.coords[length - 1].split(':')[0];
+				this.pacmanY = this.oldGame.coords[length - 1].split(':')[1];
+			}
+			
 			this.pacman.graphics.beginFill(color);
 			this.pacman.graphics.drawCircle(this.pacmanX, this.pacmanY, MapMatrix.squareSize / 2);
 			this.pacman.graphics.endFill();
@@ -88,7 +127,7 @@ package
 			
 			if (color == 0xff0000) {
 				// game over
-				this.stage.removeEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDownHandler);
+				if (this.stage != null) this.stage.removeEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDownHandler);
 				
 				this.pacman.graphics.clear();
 				this.pacman.graphics.beginFill(color);
@@ -98,6 +137,8 @@ package
 				this.gameOver = new GameOver();
 				this.addChild(gameOver);
 				
+				this.scoreTable = new ResultTable(this.score.countScore);
+				this.addChild(this.scoreTable);
 				this.clearStage();
 				
 			
@@ -158,17 +199,21 @@ package
 				case 38: // up
 					this.directY2 = -1;
 					this.directX2 = 0;
+					//this.pacmanY -= this.getMapValue(this.pacmanX , this.pacmanY, 0, 1);
 					break;
 				case 40: // down
+					//this.pacmanY -= this.getMapValue(this.pacmanX , this.pacmanY, 0, -1);
 					this.directY2 = 1;
 					this.directX2 = 0;
 					
 					break;
 				case 37: // left
+					//this.pacmanX -= this.getMapValue(this.pacmanX , this.pacmanY, 1, 0);
 					this.directX2 = -1;
 					this.directY2 = 0;
 					break;
 				case 39: //right
+					//this.pacmanX -= this.getMapValue(this.pacmanX , this.pacmanY, -1, 0);
 					this.directX2 = 1;
 					this.directY2 = 0;
 					break;
@@ -205,10 +250,10 @@ package
 					this.directX = 0;
 					this.directY = 0;
 				} else {
-					if (this.matrix.scoreMatrix[nextX + nextY] < 1)
+					if (this.matrix.scoreMatrix[nextX + nextY] == 0)
 					{
 						this.score.UpdateScore(1);
-						this.matrix.scoreMatrix[nextX + nextY]++;
+						this.matrix.scoreMatrix[nextX + nextY] = -1;
 					}
 					
 					this.map[nextX + nextY] = -1;

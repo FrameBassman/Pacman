@@ -5,6 +5,11 @@ package
 	import flash.net.*;
 	import flash.system.LoaderContext;
 	
+	
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class MapMatrix extends Sprite implements IDispose 
 	{
 		static public var mapHeight:Number = 30;
@@ -20,13 +25,34 @@ package
 		
 		public function MapMatrix()
 		{
+		}
+		
+		public function Init(oldScoreMatrix:Vector.<Number>):void {
+			this.mapMatrix = new Vector.<Shape>();
+			if (oldScoreMatrix != null && oldScoreMatrix.length > 0) {
+					this.scoreMatrix = new Vector.<Number>();
+						this.matrix = new Vector.<Number>();
+					for (var i:int = 0; i < oldScoreMatrix.length; i++ ) {
+						this.mapMatrix.push(new Shape());
+						this.scoreMatrix.push(oldScoreMatrix[i]);
+						this.matrix.push(oldScoreMatrix[i]);
+					}
+					
+				this.x = deltaX;
+				this.y = 0
+					this.addEventListener(Event.ADDED_TO_STAGE, this.addedtoStageHandler);
+					this.dispatchEvent(new MapLoadedEvent(typeof MapLoadedEvent));
+					
+					return;
+			}
+			
 			this.x = deltaX;
 			this.y = 0
 			this.loader = new URLLoader();
 			this.loader.addEventListener(Event.COMPLETE, onDataLoaded);
 			var b:URLRequest = new URLRequest("http://localhost:1444/map.txt");
 			this.loader.dataFormat = "text";
-			this.loader.load(b);
+			this.loader.load(b);	
 		}
 		
 		public function Dispose():void {
@@ -45,7 +71,7 @@ package
 			var a:String = this.loader.data;
 			var split:Array = a.split(',');
 			
-			this.mapMatrix = new Vector.<Shape>();
+			
 			this.initMatrix(split);
 			//this.initMap();
 			

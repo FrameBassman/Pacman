@@ -10,7 +10,10 @@ package
 	
 	import flash.geom.*;
 	import flash.external.ExternalInterface;
-
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class Monster extends Sprite implements IDispose
 	{
 		//private var mob:Shape = new Shape();
@@ -24,10 +27,15 @@ package
 		
 		private var map:MapMatrix;
 		
-		public function Monster(map:MapMatrix) 
+		public function Monster(map:MapMatrix, x:int, y:int) 
 		{
 			this.map = map;
-
+	
+			if (x > 0 && y > 0) {
+				this.mobX = x;
+				this.mobY = y;
+			}
+			
 			this.addEventListener(Event.ENTER_FRAME, this.moveMob);
 		}
 		

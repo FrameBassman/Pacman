@@ -1,5 +1,9 @@
 package  
 {
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class Convert 
 	{
 		

@@ -2,6 +2,10 @@ package
 {
 	import flash.events.Event;
 	
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class MapLoadedEvent extends Event 
 	{
 		

@@ -3,10 +3,14 @@ package
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class ScoreCounter extends Sprite implements IDispose
 	{
 		private var counter:TextField = new TextField();
-		private var countScore:int = 0;
+		public var countScore:int = 0;
 		
 		public function ScoreCounter() 
 		{

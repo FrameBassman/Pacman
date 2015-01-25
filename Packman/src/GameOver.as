@@ -16,6 +16,10 @@ package
     import flash.geom.Rectangle;
     import flash.events.Event;
 
+	/**
+	 * ...
+	 * @author denis sychev
+	 */
 	public class GameOver extends Sprite implements IDispose
 	{
 		private var urlrequest:URLRequest;
@@ -34,7 +38,7 @@ package
 		
 		public function Dispose():void {
 			this.urlLoader.removeEventListener(Event.COMPLETE, onDataLoaded);
-            this.removeChild(this.loader);
+//			this.removeChild(this.loader);
 		}
 		
 		private function onDataLoaded(e:Event):void {
